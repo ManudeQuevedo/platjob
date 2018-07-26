@@ -9,6 +9,14 @@ const mongoose     = require('mongoose');
 const logger       = require('morgan');
 const path         = require('path');
 
+const flash        = require("connect-flash");
+const session      = require("express-session");
+const bcrypt       = require("bcrypt");
+const passport     = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+
+const User         = require('./models/user');
+
 
 mongoose.Promise = Promise;
 mongoose
