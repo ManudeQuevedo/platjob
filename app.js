@@ -33,10 +33,57 @@ const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.
 const app = express();
 
 // Middleware Setup
+hbs.registerHelper('ifIn', function (elem, list, options) {
+  if (list.indexOf(elem) > -1) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+hbs.registerHelper('ifNot', function (elem, list, options) {
+  if (list.indexOf(elem) == -1) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+app.use(session({
+  secret: "156asd65asdfsdklnfasdkjhbfadshjgf873",
+  resave: true,
+  saveUninitialized: true
+}));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+passport.use(new LocalStrategy({
+  passReqToCallback: true
+}, (req, username, password, next) => {
+  User.findOne({
+    username
+  }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return next(null, false, {
+        message: "Incorrect username"
+      });
+    }
+    if (!bcrypt.compareSync(password, user.password)) {
+      return next(null, false, {
+        message: "Incorrect password"
+      });
+    }
+
+    return next(null, user);
+  });
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Express View engine setup
 
@@ -55,12 +102,17 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 
 // default value for title local
-app.locals.title = 'Express - Generated with IronGenerator';
-
+app.locals.title = 'PLATJOB';
 
 
 const index = require('./routes/index');
 app.use('/', index);
+
+const auth = require("./routes/passportRouter");
+app.use('/', auth);
+
+const profiles = require("./routes/profile");
+app.use('/', profiles);
 
 
 module.exports = app;
