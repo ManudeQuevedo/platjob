@@ -14,14 +14,14 @@ const User = require('../models/user');
 function checkRoles(role) {
   return function (req, res, next) {
 
-    if (req.isAuthenticated() && req.user.role === "BOSS") {
+    if (req.isAuthenticated() && req.user.role === "SUPERADMIN") {
       return next();
     }
 
     if (req.isAuthenticated() && req.user.role === role) {
       return next();
     } else {
-      if (role == "BOSS" || role == "MANAGER") {
+      if (role == "SUPERADMIN" || role == "EMPLOYER") {
         res.redirect('/admin/login')
       } else {
         res.redirect('/login')
@@ -30,10 +30,9 @@ function checkRoles(role) {
   }
 }
 
-const checkAlumni = checkRoles('ALUMNI');
-const checkTA = checkRoles('TA');
-const checkBoss = checkRoles('BOSS');
-const checkManager = checkRoles('MANAGER');
+const checkIronHacker = checkRoles('IRONHACKER');
+const checkAdmin = checkRoles('SUPERADMIN');
+const checkCompany = checkRoles('EMPLOYER');
 
 router.get('/admin/login', (req, res) => {
   res.render('admin/login', {
@@ -50,7 +49,7 @@ router.post("/admin/login", passport.authenticate("local", {
 
 //BOSS User Manager CRUD
 
-router.get('/admin/users', checkBoss, checkManager, (req, res) => {
+router.get('/admin/users', checkAdmin, checkCompany, (req, res) => {
   User.find({}, (err, users) => {
     res.render('admin/users/list', {
       users: users,
@@ -59,7 +58,7 @@ router.get('/admin/users', checkBoss, checkManager, (req, res) => {
   });
 });
 
-router.get('/admin/users/add', checkBoss, checkManager, (req, res) => {
+router.get('/admin/users/add', checkAdmin, checkCompany, (req, res) => {
   console.log(req.user)
   res.render('admin/users/add', {
     authUser: req.user
@@ -67,7 +66,7 @@ router.get('/admin/users/add', checkBoss, checkManager, (req, res) => {
 
 });
 
-router.post('/admin/users/add', checkBoss, checkManager, (req, res) => {
+router.post('/admin/users/add', checkAdmin, checkCompany, (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
@@ -112,7 +111,7 @@ router.post('/admin/users/add', checkBoss, checkManager, (req, res) => {
     })
 });
 
-router.get('/admin/users/:id/edit', checkBoss, (req, res) => {
+router.get('/admin/users/:id/edit', checkAdmin, (req, res) => {
   User.findOne({
     _id: req.params.id
   }, (err, userItem) => {
@@ -123,7 +122,7 @@ router.get('/admin/users/:id/edit', checkBoss, (req, res) => {
   });
 });
 
-router.post('/admin/users/:id/edit', checkBoss, (req, res) => {
+router.post('/admin/users/:id/edit', checkAdmin, (req, res) => {
   User.updateOne({
     _id: req.params.id
   }, req.body, (err, user) => {
@@ -131,7 +130,7 @@ router.post('/admin/users/:id/edit', checkBoss, (req, res) => {
   });
 });
 
-router.post('/admin/users/:id/delete', checkBoss, checkManager, (req, res) => {
+router.post('/admin/users/:id/delete', checkAdmin, checkCompany, (req, res) => {
   User.deleteOne({
     _id: req.params.id
   }, (err, user) => {
