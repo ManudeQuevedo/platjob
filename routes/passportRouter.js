@@ -1,166 +1,84 @@
-const express = require('express');
-const router = express.Router();
+// routes/auth-routes.js
+const express     = require("express");
+const authRoutes  = express.Router();
+const passport    = require("passport");
 
-const mongoose = require('mongoose');
+// User model
+const User        = require("../models/user");
 
-const passport = require("passport");
+// Bcrypt to encrypt passwords
+const bcrypt      = require("bcrypt");
+const bcryptSalt  = 10;
+
+// Ensure user is authenticated:
 const ensureLogin = require("connect-ensure-login");
 
-const bcrypt = require("bcrypt");
-const bcryptSalt = 10;
-
-const User = require('../models/user');
-
-function checkRoles(role) {
-  return function (req, res, next) {
-
-    if (req.isAuthenticated() && req.user.role === "SUPERADMIN") {
-      return next();
-    }
-
-    if (req.isAuthenticated() && req.user.role === role) {
-      return next();
-    } else {
-      if (role == "SUPERADMIN" || role == "EMPLOYER") {
-        res.redirect('/admin/login')
-      } else {
-        res.redirect('/login')
-      }
-    }
-  }
-}
-
-const checkIronHacker = checkRoles('IRONHACKER');
-const checkAdmin = checkRoles('SUPERADMIN');
-const checkCompany = checkRoles('EMPLOYER');
-
-router.get('/admin/login', (req, res) => {
-  res.render('admin/login', {
-    "message": req.flash("error")
-  });
+authRoutes.get("/signup", (req, res, next) => {
+  res.render("auth/signup");
 });
 
-router.post("/admin/login", passport.authenticate("local", {
-  successRedirect: "/admin/users",
-  failureRedirect: "/admin/login",
-  failureFlash: true,
-  passReqToCallback: true
-}));
-
-//BOSS User Manager CRUD
-
-router.get('/admin/users', checkAdmin, checkCompany, (req, res) => {
-  User.find({}, (err, users) => {
-    res.render('admin/users/list', {
-      users: users,
-      authUser: req.user
-    });
-  });
-});
-
-router.get('/admin/users/add', checkAdmin, checkCompany, (req, res) => {
-  console.log(req.user)
-  res.render('admin/users/add', {
-    authUser: req.user
-  });
-
-});
-
-router.post('/admin/users/add', checkAdmin, checkCompany, (req, res) => {
+authRoutes.post("/signup", (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
 
   if (username === "" || password === "") {
     res.render("auth/signup", {
-      message: "Username and Password Required"
+      message: "Indicate username and password"
     });
     return;
   }
 
   User.findOne({
-      username
-    })
-    .then(user => {
-      if (user !== null) {
-        res.render("admin/users/add", {
-          message: "Username is not available"
+    username
+  }, "username", (err, user) => {
+    if (user !== null) {
+      res.render("auth/signup", {
+        message: "The username already exists"
+      });
+      return;
+    }
+
+    const salt = bcrypt.genSaltSync(bcryptSalt);
+    const hashPass = bcrypt.hashSync(password, salt);
+
+    const newUser = new User({
+      username,
+      password: hashPass
+    });
+
+    newUser.save((err) => {
+      if (err) {
+        res.render("auth/signup", {
+          message: "Something went wrong"
         });
-        return;
+      } else {
+        res.redirect("/");
       }
-
-      const salt = bcrypt.genSaltSync(10);
-      const hashPass = bcrypt.hashSync(password, salt);
-
-      const newUser = new User({
-        username,
-        password: hashPass
-      });
-
-      newUser.save((err) => {
-        if (err) {
-          res.render("admin/users/add", {
-            message: "Error, contact sire admin."
-          });
-        } else {
-          res.redirect("/admin/users");
-        }
-      });
-    })
-    .catch(error => {
-      next(error)
-    })
-});
-
-router.get('/admin/users/:id/edit', checkAdmin, (req, res) => {
-  User.findOne({
-    _id: req.params.id
-  }, (err, userItem) => {
-    res.render('admin/users/edit', {
-      userItem: userItem,
-      authUser: req.user
     });
   });
 });
 
-router.post('/admin/users/:id/edit', checkAdmin, (req, res) => {
-  User.updateOne({
-    _id: req.params.id
-  }, req.body, (err, user) => {
-    res.redirect("/admin/users");
-  });
+authRoutes.get("/login", (req, res, next) => {
+  res.render("auth/login");
 });
 
-router.post('/admin/users/:id/delete', checkAdmin, checkCompany, (req, res) => {
-  User.deleteOne({
-    _id: req.params.id
-  }, (err, user) => {
-    res.redirect("/admin/users");
-  });
-});
-
-router.get("/auth/facebook", passport.authenticate("facebook"));
-
-router.get("/auth/facebook/callback", passport.authenticate("facebook", {
-  successRedirect: "/courses",
-  failureRedirect: "/"
-}));
-
-router.get("/login", (req, res, next) => {
-  res.render("login");
-});
-
-router.post("/login", passport.authenticate("local", {
-  successRedirect: "/courses",
+authRoutes.post("/login", passport.authenticate("local", {
+  successRedirect: "/",
   failureRedirect: "/login",
   failureFlash: true,
   passReqToCallback: true
 }));
 
-router.get("/logout", (req, res) => {
-  req.logout();
-  res.redirect("/login");
-});
+// authRoutes.get("/private", ensureLogin.ensureLoggedIn(), (req, res) => {
+//   res.render("private", {
+//     user: req.user
+//   });
+// });
 
+// authRoutes.get("/logout", (req, res) => {
+//   req.logout();
+//   console.log("ASD");
+//   res.redirect("/login");
+// });
 
-
-module.exports = router;
+module.exports = authRoutes;
