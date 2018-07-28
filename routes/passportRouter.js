@@ -1,40 +1,31 @@
-// routes/auth-routes.js
-const express     = require("express");
-const authRoutes  = express.Router();
-const passport    = require("passport");
-
+const express        = require("express");
+const router         = express.Router();
 // User model
-const User        = require("../models/user");
-
+const User           = require("../models/user");
 // Bcrypt to encrypt passwords
-const bcrypt      = require("bcrypt");
-const bcryptSalt  = 10;
+const bcrypt         = require("bcrypt");
+const bcryptSalt     = 10;
+const ensureLogin   = require("connect-ensure-login");
+const passport      = require("passport");
 
-// Ensure user is authenticated:
-const ensureLogin = require("connect-ensure-login");
 
-authRoutes.get("/signup", (req, res, next) => {
-  res.render("auth/signup");
-});
+router.get("/signup", (req, res, next) =>{
+  res.render("auth/signup")
+})
 
-authRoutes.post("/signup", (req, res, next) => {
+router.post("/signup", (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
 
   if (username === "" || password === "") {
-    res.render("auth/signup", {
-      message: "Indicate username and password"
-    });
+    res.render("auth/signup", { message: "Indicate username and password" });
     return;
   }
 
-  User.findOne({
-    username
-  }, "username", (err, user) => {
+  User.findOne({ username })
+  .then(user => {
     if (user !== null) {
-      res.render("auth/signup", {
-        message: "The username already exists"
-      });
+      res.render("auth/signup", { message: "The username already exists" });
       return;
     }
 
@@ -46,39 +37,37 @@ authRoutes.post("/signup", (req, res, next) => {
       password: hashPass
     });
 
-    newUser.save((err) => {
+     newUser.save((err) => {
       if (err) {
-        res.render("auth/signup", {
-          message: "Something went wrong"
-        });
+        res.render("auth/signup", { message: "Something went wrong" });
       } else {
         res.redirect("/");
       }
     });
+  })
+  .catch(error => {
+    next(error)
   });
 });
 
-authRoutes.get("/login", (req, res, next) => {
+router.get("/login", (req, res, next) => {
   res.render("auth/login");
 });
 
-authRoutes.post("/login", passport.authenticate("local", {
+router.post("/login", passport.authenticate("local", {
   successRedirect: "/",
   failureRedirect: "/login",
   failureFlash: true,
   passReqToCallback: true
 }));
 
-// authRoutes.get("/private", ensureLogin.ensureLoggedIn(), (req, res) => {
-//   res.render("private", {
-//     user: req.user
-//   });
-// });
+router.get("/private", ensureLogin.ensureLoggedIn(), (req, res) => {
+  res.render("/private", { user: req.user });
+});
 
-// authRoutes.get("/logout", (req, res) => {
-//   req.logout();
-//   console.log("ASD");
-//   res.redirect("/login");
-// });
+router.get("/logout", (req, res) =>{
+  req.logout();
+  res.redirect("/logout");
+})
 
-module.exports = authRoutes;
+module.exports = router;
