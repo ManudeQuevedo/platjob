@@ -1,6 +1,8 @@
-const express       = require('express');
-const router        = express.Router();
-const User          = require('../models/user');
+const express = require('express');
+const router = express.Router();
+
+const Course = require('../models/course');
+const User = require('../models/user');
 
 function checkRoles(role) {
   return function (req, res, next) {
@@ -12,7 +14,7 @@ function checkRoles(role) {
   }
 }
 
-const checkStudents = checkRoles('IRONHACKER');
+const checkStudents = checkRoles('STUDENT');
 
 router.get("/profiles/", checkStudents, (req, res) => {
   User.find({}, (err, users) => {

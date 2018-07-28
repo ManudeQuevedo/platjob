@@ -1,27 +1,26 @@
 require('dotenv').config();
 
-// NPM files needed:
-const bodyParser   = require('body-parser');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const express      = require('express');
-const favicon      = require('serve-favicon');
-const hbs          = require('hbs');
-const mongoose     = require('mongoose');
-const logger       = require('morgan');
-const path         = require('path');
-const flash        = require("connect-flash");
-const session      = require("express-session");
-const bcrypt       = require("bcrypt");
-const passport     = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
-
-
-const User         = require('./models/user');
+const express = require('express');
+const favicon = require('serve-favicon');
+const hbs = require('hbs');
+const mongoose = require('mongoose');
+const logger = require('morgan');
+const path = require('path');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const User = require("./models/user");
+const flash = require("connect-flash");
 
 
 mongoose.Promise = Promise;
 mongoose
-  .connect('mongodb://localhost/platjob', {useMongoClient: true})
+  .connect('mongodb://localhost/platjob', {
+    useMongoClient: true
+  })
   .then(() => {
     console.log('Connected to Mongo!')
   }).catch(err => {
@@ -34,32 +33,18 @@ const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.
 const app = express();
 
 // Middleware Setup
-hbs.registerHelper('ifIn', function (elem, list, options) {
-  if (list.indexOf(elem) > -1) {
-    return options.fn(this);
-  }
-  return options.inverse(this);
-});
-
-hbs.registerHelper('ifNot', function (elem, list, options) {
-  if (list.indexOf(elem) == -1) {
-    return options.fn(this);
-  }
-  return options.inverse(this);
-});
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
+app.use(cookieParser());
 
 app.use(session({
-  secret: "156asd65asdfsdklnfasdkjhbfadshjgf873",
+  secret: "our-passport-local-strategy-app",
   resave: true,
   saveUninitialized: true
 }));
-
-app.use(logger('dev')); // log every request to the console
-app.use(bodyParser.json()); // get information from html forms
-app.use(bodyParser.urlencoded({
-  extended: false
-})); // Parse incoming request bodies in a middleware beforez handlers
-app.use(cookieParser()); // read cookies (needed for auth)
 
 passport.serializeUser((user, cb) => {
   cb(null, user._id);
@@ -74,45 +59,39 @@ passport.deserializeUser((id, cb) => {
   });
 });
 
-app.use(flash())
 passport.use(new LocalStrategy((username, password, next) => {
-  passReqToCallback: true
-  }, (req, username, password, next) => {
-      User.findOne({
-        username
-      }, (err, user) => {
-        if (err) {
-          console.log("PRUEBA")
-          return next(err);
-        }
-        if (!user) {
-          console.log("PRUEBA-2")
-          return next(null, false, {
-            message: "Incorrect username"
-          });
-        }
-        if (!bcrypt.compareSync(password, user.password)) {
-          console.log("PRUEBA-3")
-          return next(null, false, {
-            message: "Incorrect password"
-          });
-        }
+  User.findOne({
+    username
+  }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return next(null, false, {
+        message: "Incorrect username"
+      });
+    }
+    if (!bcrypt.compareSync(password, user.password)) {
+      return next(null, false, {
+        message: "Incorrect password"
+      });
+    }
 
     return next(null, user);
   });
 }));
 
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-
+app.use(passport.session());
 
 // Express View engine setup
+
 app.use(require('node-sass-middleware')({
-  src:  path.join(__dirname, 'public'),
+  src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
   sourceMap: true
 }));
-      
+
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -122,20 +101,12 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 
 // default value for title local
-app.locals.title = 'PLATJOB';
-
-
-const authRoutes = require("./routes/passportRouter");
-app.use('/', authRoutes);
+app.locals.title = 'PlatJob - Authentication Page';
 
 const index = require('./routes/index');
+const passportRouter = require("./routes/passportRouter");
 app.use('/', index);
-
-const auth = require("./routes/passportRouter");
-app.use('/', auth);
-
-const profiles = require("./routes/profile");
-app.use('/', profiles);
+app.use('/', passportRouter);
 
 
 module.exports = app;
