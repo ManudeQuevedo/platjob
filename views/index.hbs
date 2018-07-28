@@ -1,12 +1,9 @@
 {{!-- <video preload="none" loop autoplay="true" poster="/public/images/intro.png" src="/public/video/intro.mp4"></video> --}}
 <h1>Welcome to {{title}}</h1>
 
-<form method="get" action="/page1">
-  <button type="button">Empresa</button>
-</form>
-
-<form method="get" action="/page2">
-  <button type="button">IronHacker</button>
-</form>
-  
-  
+<h3>Please, select your role:</h3>
+<select name="role">
+  <option value="ADMIN" onclick="window.location.href='/login'">Admin</option>
+  <option value="IRONHACKER" onclick="window.location.href='/login'">IronHacker</option>
+  <option value="COMPANY" onclick="window.location.href='/login">Company</option>
+</select>
