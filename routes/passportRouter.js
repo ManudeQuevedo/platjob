@@ -51,12 +51,23 @@ router.post("/signup", (req, res, next) => {
 });
 
 router.get("/login", (req, res, next) => {
-  res.render("auth/login");
+  res.render("./login");
 });
 
 router.post("/login", passport.authenticate("local", {
   successRedirect: "/",
   failureRedirect: "/login",
+  failureFlash: true,
+  passReqToCallback: true
+}));
+
+router.get("/login-adm", (req, res, next) => {
+  res.render("./login-adm");
+});
+
+router.post("/login-adm", passport.authenticate("local", {
+  successRedirect: "/",
+  failureRedirect: "./login-adm",
   failureFlash: true,
   passReqToCallback: true
 }));

@@ -22,7 +22,7 @@ mongoose
     useMongoClient: true
   })
   .then(() => {
-    console.log('Connected to Mongo!')
+    console.log('Connection Established, now open: localhost:3000!')
   }).catch(err => {
     console.error('Error connecting to mongo', err)
   });
@@ -101,7 +101,7 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 
 // default value for title local
-app.locals.title = 'PlatJob - Authentication Page';
+app.locals.title = 'PlatJob';
 
 const index = require('./routes/index');
 const passportRouter = require("./routes/passportRouter");

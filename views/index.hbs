@@ -2,8 +2,12 @@
 <h1>Welcome to {{title}}</h1>
 
 <h3>Please, select your role:</h3>
-<select name="role">
-  <option value="ADMIN" onclick="window.location.href='/login'">Admin</option>
-  <option value="IRONHACKER" onclick="window.location.href='/login'">IronHacker</option>
-  <option value="COMPANY" onclick="window.location.href='/login">Company</option>
-</select>
+
+<form action="./login-adm">
+  <button>Admin Login</button>
+</form>
+
+<form action="./login">
+  <button>IronHacker</button>
+  <button>Empleador</button>
+</form>
