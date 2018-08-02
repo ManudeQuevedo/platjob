@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const courseSchema = new Schema({
+const jobSchema = new Schema({
   title: String,
   description: String,
   content: String,
-  assignedUser: Array
+  companyName: Array
 }, {
   timestamps: {
     createdAt: "created_at",
@@ -13,6 +13,5 @@ const courseSchema = new Schema({
   }
 });
 
-const Course = mongoose.model("Course", courseSchema);
-
-module.exports = Course;
+const Job = mongoose.model("Job", jobSchema);
+module.exports = Job;
