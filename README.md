@@ -40,4 +40,11 @@ Be deployed online and accessible to the public.
 
 ## Technologies used
 
-.
+* PassportJS
+* Mongoose
+* HBS
+* JavaScript
+* NodeJS
+* ExpressJS
+* Heroku (Cloud hosting)
+* MongoDB
