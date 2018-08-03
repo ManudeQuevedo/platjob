@@ -8,7 +8,7 @@ const userSchema = new Schema({
     role: {
         type: String,
         enum: ['COMPANY', 'IRONHACKER', 'ADMIN'],
-        default: 'IRONHACKER',
+        default: 'IRONHACKER'
     },
     session: String,
     last_login: {
