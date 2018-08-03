@@ -2,10 +2,15 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const jobSchema = new Schema({
+  companyName: Array,
   title: String,
   description: String,
-  content: String,
-  companyName: Array
+  function: String,
+  objective: String,
+  qualifications: String,
+  Benefits: String,
+  email: String,
+  resume: String
 }, {
   timestamps: {
     createdAt: "created_at",

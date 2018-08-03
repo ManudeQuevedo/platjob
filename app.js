@@ -95,12 +95,12 @@ passport.use(new LocalStrategy((username, password, next) => {
     }
     if (!user) {
       return next(null, false, {
-        message: "Incorrect username"
+        message: "Incorrect password or username, please validate"
       });
     }
     if (!bcrypt.compareSync(password, user.password)) {
       return next(null, false, {
-        message: "Incorrect password"
+        message: "Incorrect password or username, please validate"
       });
     }
 

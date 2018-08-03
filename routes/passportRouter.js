@@ -1,24 +1,25 @@
-const express = require("express");
-const authRoutes = express.Router();
+const express         = require("express");
+const authRoutes      = express.Router();
 
 // Bcrypt to encrypt passwords
-const bcrypt = require("bcryptjs");
-const bcryptSalt = 10;
+const bcrypt          = require("bcryptjs");
+const bcryptSalt      = 10;
 
 // User model
-const User = require("../models/user");
+const User            = require("../models/user");
 
 // Require Passport
-const passport = require("passport");
+const passport        = require("passport");
 
 //  Makes sure user has logged in
-const ensureLogin = require("connect-ensure-login");
+const ensureLogin     = require("connect-ensure-login");
 
 
 // Login
 authRoutes.get("/login", (req, res, next) => {
-  res.render("./login", {
-    "message": req.flash("error")
+  res.render("account/user/login", {
+    "message": req.flash("error"),
+    "user": req.user
   });
 });
 
@@ -59,9 +60,9 @@ function checkRoles(role) {
 
 // Roles:
 //========================>
-const checkCompany = checkRoles('COMPANY');
-const checkIronHacker = checkRoles('IRONHACKER');
-const checkAdmin = checkRoles('ADMIN');
+const checkCompany      = checkRoles('COMPANY');
+const checkIronHacker   = checkRoles('IRONHACKER');
+const checkAdmin        = checkRoles('ADMIN');
 //========================>
 
 
@@ -69,13 +70,20 @@ const checkAdmin = checkRoles('ADMIN');
 // Admin Accessess:
 //========================>
 authRoutes.get('/admin/login', (req, res) => {
-  res.render('admin/users/index', {
+  res.render('account/admin/login', {
     "message": req.flash("error")
   });
 });
 
+authRoutes.get('/admin/dashboard', (req, res) => {
+  res.render('dashboard/admin/index', {
+  "user": req.user
+  });
+
+});
+
 authRoutes.post("/admin/login", passport.authenticate("local", {
-  successRedirect: "../views/admin/users/index",
+  successRedirect: "/admin/dashboard",
   failureRedirect: "/admin/login",
   failureFlash: true,
   passReqToCallback: true
@@ -85,7 +93,7 @@ authRoutes.post("/admin/login", passport.authenticate("local", {
 // ADMIN User Manager CRUD
 authRoutes.get('/admin/users', checkAdmin, (req, res) => {
   User.find({}, (err, users) => {
-    res.render('admin/users/list', {
+    res.render('/admin/users/list', {
       users: users,
       authUser: req.user
     });
@@ -101,6 +109,7 @@ authRoutes.get('/admin/users/add', checkAdmin, (req, res) => {
 });
 
 authRoutes.post('/admin/users/add', checkAdmin, (req, res) => {
+  const name     = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
 
@@ -177,16 +186,18 @@ authRoutes.post('/admin/users/:id/delete', checkAdmin, (req, res) => {
 // Signup:
 
 authRoutes.get("/signup", (req, res, next) => {
-  res.render("./signup");
+  res.render("account/user/signup");
 });
 
 authRoutes.post("/signup", (req, res, next) => {
+  const role     = req.body.role;
+  const name     = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
 
-  if (username === "" || password === "") {
+  if (username === "" || password === "" || name === "" || role === "") {
     res.render("./signup", {
-      message: "Indicate username and password"
+      message: "Please, fill up all fields"
     });
     return;
   }
@@ -205,8 +216,10 @@ authRoutes.post("/signup", (req, res, next) => {
     const hashPass = bcrypt.hashSync(password, salt);
 
     const newUser = new User({
+      name,
+      role,
       username,
-      password: hashPass
+      password: hashPass,
     });
 
     newUser.save((err) => {
@@ -226,6 +239,8 @@ authRoutes.post("/signup", (req, res, next) => {
 
 authRoutes.get("/logout", (req, res) => {
   req.logout();
+  req.session.destroy();
+  console.log(req.session);
   res.redirect("./login");
 });
 
