@@ -1,17 +1,15 @@
-body {
-    padding: 50px;
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+* {
+    overflow-x: hidden;
 }
 
-a {
-    color: #00B7FF;
-}
-
-//página principal
 body {
     background: #fff;
     color: #666666;
     font-family: "Open Sans", sans-serif;
+}
+
+header {
+    overflow-y: hidden;
 }
 
 a {
@@ -55,7 +53,7 @@ h6 {
     width: 100%;
     height: 100%;
     overflow: visible;
-    background: #fff url("../img/preloader.svg") no-repeat center center;
+    background: #fff url("/images/preloader.svg") no-repeat center center;
 }
 
 
@@ -100,7 +98,7 @@ h6 {
     display: table;
     width: 100%;
     height: 100vh;
-    background: url(../img/fondo-hero2.jpg) top center;
+    background: url(/images/fondo-hero2.jpg) top center;
     background-size: cover;
 }
 
