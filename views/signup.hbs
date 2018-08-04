@@ -13,10 +13,11 @@
   <input id="password" type="password" name="password" placeholder="Set a password"> 
   <br>
   <br>
-  <select id="role">
-    <option value="">--Please choose an option--</option>
-    <option value="checkIronHacker">Ironhacker</option>
-    <option value="checkCompany">Employer</option>
+  <select name="role" id="role">
+    <option value="" disabled="disabled" selected="selected">--Please choose an option--</option>
+    <option value="IRONHACKER">Ironhacker</option>
+    <option value="COMPANY">Employer</option>
+    <option value="ADMIN">Administrator</option>
   </select>
   {{#if message}}
     <div class="error-message">{{ message }}</div>

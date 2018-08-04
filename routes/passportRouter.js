@@ -14,12 +14,68 @@ const passport        = require("passport");
 //  Makes sure user has logged in
 const ensureLogin     = require("connect-ensure-login");
 
+// Validates roles to redirect to specific page:
+const checkRoles      = require("./valideRouter")
+
 
 // Login
 authRoutes.get("/login", (req, res, next) => {
-  res.render("account/user/login", {
+  res.render("./login", {
     "message": req.flash("error"),
     "user": req.user
+  });
+});
+
+
+// Signup:
+
+authRoutes.get("/signup", (req, res, next) => {
+  res.render("./signup");
+});
+
+authRoutes.post("/signup", (req, res, next) => {
+  const role = req.body.role;
+  const name = req.body.name;
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log(req.body);
+
+  if (username === "" || password === "" || name === "" || role === "") {
+    res.render("./signup", {
+      message: "Please, fill up all fields"
+    });
+    return;
+  }
+
+  User.findOne({
+    username
+  }, "username", (err, user) => {
+    if (user !== null) {
+      res.render("./signup", {
+        message: "The username already exists"
+      });
+      return;
+    }
+
+    const salt = bcrypt.genSaltSync(bcryptSalt);
+    const hashPass = bcrypt.hashSync(password, salt);
+
+    const newUser = new User({
+      name,
+      role,
+      username,
+      password: hashPass,
+    });
+
+    newUser.save((err) => {
+      if (err) {
+        res.render("./signup", {
+          message: "Something went wrong"
+        });
+      } else {
+        res.redirect("/");
+      }
+    });
   });
 });
 
@@ -30,85 +86,37 @@ authRoutes.post("/login", passport.authenticate("local", {
   passReqToCallback: true
 }));
 
-authRoutes.get("/private-page", ensureLogin.ensureLoggedIn(), (req, res) => {
-  res.render("private", {
-    user: req.user
-  });
-});
 
-
-// Validate roles:
-function checkRoles(role) {
-  return function (req, res, next) {
-
-    if (req.isAuthenticated() && req.user.role === "ADMIN") {
-      return next();
-    }
-
-    if (req.isAuthenticated() && req.user.role === role) {
-      return next();
-    } else {
-      if (role == "ADMIN") {
-        res.redirect('/admin/login')
-      } else {
-        res.redirect('/login')
-      }
-    }
-  }
-}
-
-
-// Roles:
+// Role:
 //========================>
-const checkCompany      = checkRoles('COMPANY');
-const checkIronHacker   = checkRoles('IRONHACKER');
 const checkAdmin        = checkRoles('ADMIN');
+const checkCompany      = checkRoles('COMPANY');
+const checkironhacker   = checkRoles("IRONHACKER");
 //========================>
 
 
 
 // Admin Accessess:
 //========================>
-authRoutes.get('/admin/login', (req, res) => {
-  res.render('account/admin/login', {
-    "message": req.flash("error")
-  });
-});
-
-authRoutes.get('/admin/dashboard', (req, res) => {
-  res.render('dashboard/admin/index', {
-  "user": req.user
-  });
-
-});
-
-authRoutes.post("/admin/login", passport.authenticate("local", {
-  successRedirect: "/admin/dashboard",
-  failureRedirect: "/admin/login",
-  failureFlash: true,
-  passReqToCallback: true
-}));
-
-
-// ADMIN User Manager CRUD
-authRoutes.get('/admin/users', checkAdmin, (req, res) => {
+authRoutes.get('/dashboard', checkAdmin, (req, res) => {
   User.find({}, (err, users) => {
-    res.render('/admin/users/list', {
+    res.render('/dashboard/profile', {
       users: users,
       authUser: req.user
     });
   });
 });
 
-authRoutes.get('/admin/users/add', checkAdmin, (req, res) => {
+authRoutes.get('/dashboard', checkAdmin, (req, res) => {
   console.log(req.user)
-  res.render('admin/users/add', {
+  res.render('dashboard/add', {
     authUser: req.user
   });
 
 });
 
 authRoutes.post('/admin/users/add', checkAdmin, (req, res) => {
+  const role     = req.body.role;
   const name     = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
@@ -154,7 +162,7 @@ authRoutes.post('/admin/users/add', checkAdmin, (req, res) => {
     })
 });
 
-authRoutes.get('/admin/users/:id/edit', checkAdmin, (req, res) => {
+authRoutes.get('/dashboard', checkAdmin, (req, res) => {
   User.findOne({
     _id: req.params.id
   }, (err, userItem) => {
@@ -183,57 +191,205 @@ authRoutes.post('/admin/users/:id/delete', checkAdmin, (req, res) => {
 //========================>
 
 
-// Signup:
 
-authRoutes.get("/signup", (req, res, next) => {
-  res.render("account/user/signup");
+
+// Company Accessess:
+//========================>
+
+
+// employer User Manager CRUD
+authRoutes.get('/dashboard', checkCompany, (req, res) => {
+  User.find({}, (err, users) => {
+    res.render('/employer/users/list', {
+      users: users,
+      authUser: req.user
+    });
+  });
 });
 
-authRoutes.post("/signup", (req, res, next) => {
-  const role     = req.body.role;
-  const name     = req.body.name;
+authRoutes.get('/dashboard', checkCompany, (req, res) => {
+  console.log(req.user)
+  res.render('employer/users/add', {
+    authUser: req.user
+  });
+
+});
+
+authRoutes.post('/employer/users/add', checkCompany, (req, res) => {
+  const role = req.body.role;
+  const name = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
 
-  if (username === "" || password === "" || name === "" || role === "") {
-    res.render("./signup", {
-      message: "Please, fill up all fields"
+  if (username === "" || password === "") {
+    res.render("../views/signup", {
+      message: "Username and Password Required"
     });
     return;
   }
 
   User.findOne({
-    username
-  }, "username", (err, user) => {
-    if (user !== null) {
-      res.render("./signup", {
-        message: "The username already exists"
-      });
-      return;
-    }
-
-    const salt = bcrypt.genSaltSync(bcryptSalt);
-    const hashPass = bcrypt.hashSync(password, salt);
-
-    const newUser = new User({
-      name,
-      role,
-      username,
-      password: hashPass,
-    });
-
-    newUser.save((err) => {
-      if (err) {
-        res.render("./signup", {
-          message: "Something went wrong"
+      username
+    })
+    .then(user => {
+      if (user !== null) {
+        res.render("employer/users/add", {
+          message: "Username is not available"
         });
-      } else {
-        res.redirect("/");
+        return;
       }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashPass = bcrypt.hashSync(password, salt);
+
+      const newUser = new User({
+        username,
+        password: hashPass
+      });
+
+      newUser.save((err) => {
+        if (err) {
+          res.render("employer/users/add", {
+            message: "Error, contact site Admin."
+          });
+        } else {
+          res.redirect("/employer/users");
+        }
+      });
+    })
+    .catch(error => {
+      next(error)
+    })
+});
+
+authRoutes.get('/employer/users/:id/edit', checkCompany, (req, res) => {
+  User.findOne({
+    _id: req.params.id
+  }, (err, userItem) => {
+    res.render('employer/users/edit', {
+      userItem: userItem,
+      authUser: req.user
     });
   });
 });
 
+authRoutes.post('/employer/users/:id/edit', checkCompany, (req, res) => {
+  User.updateOne({
+    _id: req.params.id
+  }, req.body, (err, user) => {
+    res.redirect("/employer/users");
+  });
+});
+
+authRoutes.post('/employer/users/:id/delete', checkCompany, (req, res) => {
+  User.deleteOne({
+    _id: req.params.id
+  }, (err, user) => {
+    res.redirect("/employer/users");
+  });
+});
+//========================>
+
+
+
+
+
+// IronHacker Accessess:
+//========================>
+
+// Ironhacker User Manager CRUD
+authRoutes.get('/ironhacker/users', (req, res) => {
+  User.find({}, (err, users) => {
+    if(!err){
+      res.json(users)
+    }else{
+      res.statusCode(500).json({error:"No se encontraron datos"});
+    }
+    
+  });
+});
+
+authRoutes.get('/dashboard', checkironhacker, (req, res) => {
+  console.log(req.user)
+  res.render('ironhacker/users/add', {
+    authUser: req.user
+  });
+
+});
+
+authRoutes.post('/ironhacker/users/add', checkironhacker, (req, res) => {
+  const name = req.body.name;
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if (username === "" || password === "") {
+    res.render("../views/signup", {
+      message: "Username and Password Required"
+    });
+    return;
+  }
+
+  User.findOne({
+      username
+    })
+    .then(user => {
+      if (user !== null) {
+        res.render("ironhacker/users/add", {
+          message: "Username is not available"
+        });
+        return;
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashPass = bcrypt.hashSync(password, salt);
+
+      const newUser = new User({
+        username,
+        password: hashPass
+      });
+
+      newUser.save((err) => {
+        if (err) {
+          res.render("ironhacker/users/add", {
+            message: "Error, contact site ironhacker."
+          });
+        } else {
+          res.redirect("/ironhacker/users");
+        }
+      });
+    })
+    .catch(error => {
+      next(error)
+    })
+});
+
+authRoutes.get('/ironhacker/users/:id/edit', checkironhacker, (req, res) => {
+  User.findOne({
+    _id: req.params.id
+  }, (err, userItem) => {
+    res.render('ironhacker/users/edit', {
+      userItem: userItem,
+      authUser: req.user
+    });
+  });
+});
+
+authRoutes.post('/ironhacker/users/:id/edit', checkironhacker, (req, res) => {
+  User.updateOne({
+    _id: req.params.id
+  }, req.body, (err, user) => {
+    res.redirect("/ironhacker/users");
+  });
+});
+
+authRoutes.post('/ironhacker/users/:id/delete', checkironhacker, (req, res) => {
+  User.deleteOne({
+    _id: req.params.id
+  }, (err, user) => {
+    res.redirect("/ironhacker/users");
+  });
+});
+//========================>
 
 // Logout
 

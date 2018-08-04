@@ -1,17 +1,18 @@
-<form action="/admin/login" method="POST" id="form">
-  <h2>Login Admin</h2>
+<form action="/login" method="POST" id="form">
+  <h2>Login</h2>
 
   <label for="username">Username</label>
   <input type="text" name="username" placeholder="Username">
 
   <label for="password">Password</label>
-  <input type="password" name="password" placeholder="Password">
-  
-  <br>
+  <input type="password" name="password" placeholder="Password"> <br>
+
   <button>Sign in</button>
-  <br> 
-  
   {{#if message}}
     <div class="error-message">{{ message }}</div>
   {{/if}}
+  <p class="account-message">
+    Don't have an account?
+    <a href="./signup">Sign up</a>
+  </p>
 </form>
