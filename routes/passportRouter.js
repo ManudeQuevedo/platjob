@@ -15,7 +15,7 @@ const passport        = require("passport");
 const ensureLogin     = require("connect-ensure-login");
 
 // Validates roles to redirect to specific page:
-const checkRoles      = require("./valideRouter")
+const checkRoles      = require("./validateRouter")
 
 
 // Login
@@ -26,6 +26,13 @@ authRoutes.get("/login", (req, res, next) => {
   });
 });
 
+authRoutes.post("/login", passport.authenticate("local", {
+  successRedirect: "/dashboard",
+  failureRedirect: "./login",
+  failureFlash: true,
+  passReqToCallback: true
+}));
+
 
 // Signup:
 
@@ -34,11 +41,10 @@ authRoutes.get("/signup", (req, res, next) => {
 });
 
 authRoutes.post("/signup", (req, res, next) => {
-  const role = req.body.role;
-  const name = req.body.name;
+  const role     = req.body.role;
+  const name     = req.body.name;
   const username = req.body.username;
   const password = req.body.password;
-  console.log(req.body);
 
   if (username === "" || password === "" || name === "" || role === "") {
     res.render("./signup", {
@@ -78,13 +84,6 @@ authRoutes.post("/signup", (req, res, next) => {
     });
   });
 });
-
-authRoutes.post("/login", passport.authenticate("local", {
-  successRedirect: "/",
-  failureRedirect: "./login",
-  failureFlash: true,
-  passReqToCallback: true
-}));
 
 
 // Role:

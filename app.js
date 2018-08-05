@@ -1,20 +1,20 @@
 require('dotenv').config();
 
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const express = require('express');
-const favicon = require('serve-favicon');
-const hbs = require('hbs');
-const mongoose = require('mongoose');
-const logger = require('morgan');
-const path = require('path');
-const session = require('express-session');
-const bcrypt = require('bcryptjs');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const User = require("./models/user");
-const flash = require("connect-flash");
-const MongoStore = require("connect-mongo")(session);
+const bodyParser      = require('body-parser');
+const cookieParser    = require('cookie-parser');
+const express         = require('express');
+const favicon         = require('serve-favicon');
+const hbs             = require('hbs');
+const mongoose        = require('mongoose');
+const logger          = require('morgan');
+const path            = require('path');
+const session         = require('express-session');
+const bcrypt          = require('bcryptjs');
+const passport        = require('passport');
+const LocalStrategy   = require('passport-local').Strategy;
+const User            = require("./models/user");
+const flash           = require("connect-flash");
+const MongoStore      = require("connect-mongo")(session);
 
 
 mongoose.Promise = Promise;
@@ -120,6 +120,6 @@ const index = require('./routes/index');
 app.use('/', index);
 
 const passportRouter = require('./routes/passportRouter');
-//app.use('/', passportRouter);
+app.use('/', passportRouter);
 
 module.exports = app;
