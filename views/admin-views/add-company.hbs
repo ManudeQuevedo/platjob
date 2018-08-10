@@ -1,0 +1,55 @@
+<h2>Boss Zone</h2>
+
+<h3>Create a new user</h3>
+<form action="/signup" method="POST" id="form-container">
+  <label for="companyName">Company Name</label>
+  <input id="companyName" type="companyName" name="companyName" placeholder="Set Company Name">
+  <br>
+  <br>
+  <label for="foundation">Foundation Date</label>
+  <input id="foundation" type="foundation" name="foundation" placeholder="Set Foundation Date">
+  <br>
+  <br>
+  <label for="address"></label>
+  <input id="address" type="address" name="address" placeholder="Set Address">
+  <br>
+  <br>
+  <label for="email">Email</label>
+  <input id="email" type="email" name="email" placeholder="Set Company Email">
+  <br>
+  <br>
+  <label for="phoneNumber">Phone Number</label>
+  <input id="phoneNumber" type="phoneNumber" name="phoneNumber" placeholder="Set Company Phone Number">
+  <br>
+  <br>
+  <label for="password">Password</label>
+  <input id="password" type="password" name="password" placeholder="Set a password">
+  <br>
+  <br>
+  <select name="role" id="role">
+    <option value="" disabled="disabled" selected="selected">--Please choose an option--</option>
+    <option value="COMPANY">Company</option>
+  </select>
+  {{#if message}}
+  <div class="error-message">{{ message }}</div>
+  {{/if}}
+  <br>
+  <button>Create Company</button>
+</form>
+<hr />
+<h2>Company List</h2>
+<ul>
+  {{#each userList}}
+  <li>
+    <h3>{{this.fullName}}</h3>
+    <ul>
+      <li>Email: {{this.email}}</li>
+      <li>Role: {{this.role}}</li>
+      <li>Registered: {{this.createdAt}}</li>
+    </ul>
+    <form action="/delete-user/{{this._id}}" method="post">
+      <button>Delete User</button>
+    </form>
+  </li>
+  {{/each}}
+</ul>

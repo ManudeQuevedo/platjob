@@ -1,0 +1,36 @@
+<h2>Boss Zone</h2>
+
+<h3>Create a new user</h3>
+<form action="/signup" method="POST" id="form-container">
+  <label for="firstname">First Name</label>
+  <input id="firstname" type="firstname" name="firstname" placeholder="Provide your First Name">
+  <br>
+  <br>
+  <label for="lastname">Last Name</label>
+  <input id="lastname" type="lastname" name="lastname" placeholder="Provide your Last Name">
+  <br>
+  <br>
+  <label for="email">Email</label>
+  <input id="email" type="email" name="email" placeholder="Provide your Email">
+  <br>
+  <br>
+  <label for="username">Username</label>
+  <input id="username" type="text" name="username" placeholder="Set Username">
+  <br>
+  <br>
+  <label for="password">Password</label>
+  <input id="password" type="password" name="password" placeholder="Set a password">
+  <br>
+  <br>
+  <select name="role" id="role">
+    <option value="" disabled="disabled" selected="selected">--Please choose an option--</option>
+    <option value="IRONHACKER">Ironhacker</option>
+    <option value="COMPANY">Company</option>
+    <option value="ADMIN">Administrator</option>
+  </select>
+  {{#if message}}
+  <div class="error-message">{{ message }}</div>
+  {{/if}}
+  <br>
+  <button>Create User</button>
+</form>

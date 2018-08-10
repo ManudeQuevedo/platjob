@@ -1,13 +1,13 @@
 {
-  "name": "platjob",
+  "name": "platjob-2",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "DEBUG=platjob:* nodemon ./bin/www"
+    "dev": "DEBUG=platjob-2:* nodemon ./bin/www"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcrypt": "^3.0.0",
     "body-parser": "~1.18.2",
     "connect-ensure-login": "^0.1.1",
     "connect-flash": "^0.1.1",
