@@ -1,16 +1,18 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const mongoose     = require("mongoose");
+const Schema       = mongoose.Schema;
+// const UserSchema   = require("./user");
 
-const jobSchema = new Schema({
+const JobSchema = new Schema({
   companyName: Array,
   title: String,
   description: String,
-  function: String,
+  duties: String,
   objective: String,
   qualifications: String,
   Benefits: String,
   email: String,
-  resume: String
+  resume: String,
+  owner: UserSchema,
 }, {
   timestamps: {
     createdAt: "created_at",
@@ -18,5 +20,5 @@ const jobSchema = new Schema({
   }
 });
 
-const Job = mongoose.model("Job", jobSchema);
+const Job = mongoose.model("Job", JobSchema);
 module.exports = Job;

@@ -1,26 +1,40 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-    name: String,
-    username: String,
-    password: String,
-    role: {
-        type: String,
-        enum: ['COMPANY', 'IRONHACKER', 'ADMIN'],
-        default: 'IRONHACKER'
-    },
-    session: String,
-    last_login: {
-        type: Date,
-        default: ""
-    }
+const UserSchema = new Schema({
+  firstname: String,
+  lastname: String,
+  username: String,
+  email: String,
+  password: String,
+  role: {
+    type: String,
+    enum: ['COMPANY', 'IRONHACKER', 'ADMIN'],
+    default: 'IRONHACKER'
+  },
+  session: String,
+  last_login: {
+    type: Date,
+    default: ""
+  },
 }, {
-    timestamps: {
-        createdAt: "created_at",
-        updatedAt: "updated_at"
-    },
+  timestamps: {
+    createdAt: "created_at",
+    updatedAt: "updated_at"
+  },
 });
 
-const User = mongoose.model("User", userSchema);
+UserSchema.virtual('isAdmin').get(function () {
+  return this.role == "ADMIN";
+});
+
+UserSchema.virtual('isUser').get(function () {
+  return this.role == "IRONHACKER";
+});
+
+UserSchema.virtual('isCompany').get(function () {
+  return this.role == "COMPANY";
+});
+
+const User = mongoose.model("User", UserSchema);
 module.exports = User;
