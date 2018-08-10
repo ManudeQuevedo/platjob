@@ -1,0 +1,43 @@
+<h2>Admin Area</h2>
+
+<h3>Post a new job</h3>
+<form action="/dashboard/add" method="POST" id="form-container">
+  <label>
+    New User First Name:
+    <input type="text" name="firstname" placeholder="First Name here" />
+  </label>
+  <br />
+  <label>
+    New User Last Name:
+    <input type="text" name="lastname" placeholder="Last Name here" />
+  </label>
+  <br />
+  <label>
+    New User Email:
+    <input type="text" name="email" placeholder="Email here" />
+  </label>
+  <br />
+  <label>
+    New Username:
+    <input type="text" name="username" placeholder="Username here" />
+  </label>
+  <br />
+  <label>
+    New User Password:
+    <input type="password" name="password" placeholder="Default password here" />
+  </label>
+  <br />
+  <label>
+    New User Role:
+    <select name="role" id="role">
+      <option value="" disabled="disabled" selected="selected">--Please choose an option--</option>
+      <option value="IRONHACKER">Ironhacker</option>
+      <option value="COMPANY">Company</option>
+      <option value="ADMIN">Administrator</option>
+    </select>
+  </label>
+  <br>
+  <button>Create User</button>
+</form>
+
+<a href="/dashboard">Go to main page</a>

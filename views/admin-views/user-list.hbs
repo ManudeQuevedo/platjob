@@ -1,0 +1,21 @@
+<h2>Admin Area</h2>
+
+<h2>User List</h2>
+<ul>
+  {{#each userList}}
+  <li>
+    <h3>{{this.firstname}}</h3>
+    <h3>{{this.lastname}}</h3>
+    <ul>
+      <li>Email: {{this.email}}</li>
+      <li>Role: {{this.role}}</li>
+      <li>Registered: {{this.userId}}</li>
+    </ul>
+    <form action="/delete-user/{{._id}}" method="post">
+      <button>Delete User</button>
+    </form>
+  </li>
+  {{/each}}
+</ul>
+
+<a href="/dashboard">Go to main page</a>

@@ -1,0 +1,18 @@
+<h2>All Users</h2>
+
+<h2>User List</h2>
+<ul>
+  {{#each userList}}
+  <li>
+    <h3>{{this.firstname}} {{this.lastname}}</h3>
+    <ul>
+      <li>Email: {{this.email}}</li>
+      <li>Role: {{this.role}}</li>
+      <li>Registered: {{this.createdAt}}</li>
+    </ul>
+    <form action="/delete-user/{{this._id}}" method="post">
+      <button>Delete User</button>
+    </form>
+  </li>
+  {{/each}}
+</ul>
