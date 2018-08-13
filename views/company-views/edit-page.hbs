@@ -16,14 +16,18 @@
   <input id="username" type="text" name="username" placeholder="Set Username" value="{{blahUser.username}}">
   <br>
   <br>
-  <section>
-    <h2>Upload your photo</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <input type="text" name="name">
-      <input type="file" name="photo">
-      <input type="submit" value="Save">
-    </form>
-  </section>
+  <label for="companyName">Company Name</label>
+  <input id="companyName" type="companyName" name="companyName" placeholder="Set Company Name" value="{{blahUser.companyName}}">
+  <br>
+  <br>
+  <label for="address">Address</label>
+  <input id="address" type="address" name="address" placeholder="Set Address" value="{{blahUser.address}}">
+  <br>
+  <br>
+  <label for="phoneNumber">Phone Number</label>
+  <input id="phoneNumber" type="phoneNumber" name="phoneNumber" placeholder="Set Phone Number" value="{{blahUser.address}}">
+  <br>
+  <br>
   <button>Update</button>
 </form>
 <br>

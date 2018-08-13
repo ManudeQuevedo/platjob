@@ -7,6 +7,9 @@ const UserSchema = new Schema({
   username: String,
   email: String,
   password: String,
+  companyName: String,
+  address: String,
+  phoneNumber: String,
   role: {
     type: String,
     enum: ['COMPANY', 'IRONHACKER', 'ADMIN'],
@@ -14,8 +17,8 @@ const UserSchema = new Schema({
   },
   session: String,
   last_login: {
-    type: Date,
-    default: ""
+    type: Boolean,
+    default: false
   },
 }, {
   timestamps: {

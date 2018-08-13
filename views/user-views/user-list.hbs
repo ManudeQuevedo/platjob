@@ -4,15 +4,18 @@
 <ul>
   {{#each userList}}
   <li>
-    <h3>{{this.firstname}} {{this.lastname}}</h3>
     <ul>
+      <li>First Name: {{this.firstname}}</li>
+      <li>Last Name: {{this.lastname}}</li>
+      <li>Username: {{this.username}}</li>
       <li>Email: {{this.email}}</li>
       <li>Role: {{this.role}}</li>
-      <li>Registered: {{this.createdAt}}</li>
     </ul>
     <form action="/delete-user/{{this._id}}" method="post">
       <button>Delete User</button>
     </form>
   </li>
   {{/each}}
+  <br>
+  <a href="/dashboard">Go to main page</a>
 </ul>

@@ -1,41 +1,52 @@
-<h2>Signup</h2>
-
-<form action="/signup" method="POST" id="form-container">
-  <label for="firstname">First Name</label>
-  <input id="firstname" type="firstname" name="firstname" placeholder="Provide your First Name">
-  <br>
-  <br>
-  <label for="lastname">Last Name</label>
-  <input id="lastname" type="lastname" name="lastname" placeholder="Provide your Last Name">
-  <br>
-  <br>
-  <label for="email">Email</label>
-  <input id="email" type="email" name="email" placeholder="Provide your Email">
-  <br>
-  <br>
-  <label for="username">Username</label>
-  <input id="username" type="text" name="username" placeholder="Set Username">
-  <br>
-  <br>
-  <label for="password">Password</label>
-  <input id="password" type="password" name="password" placeholder="Set a password">
-  <br>
-  <br>
-  <select name="role" id="role">
-    <option value="" disabled="disabled" selected="selected">--Please choose an option--</option>
-    <option value="IRONHACKER">Ironhacker</option>
-    <option value="COMPANY">Company</option>
-    <option value="ADMIN">Administrator</option>
-  </select>
-  {{#if message}}
-  <div class="error-message">{{ message }}</div>
-  {{/if}}
-  <br>
-  <br>
-  <button>Create account</button>
-
-  <p class="account-message">
-    Do you already have an account?
-    <a href="/login">Login</a>
-  </p>
-</form>
+<div style="position: fixed; z-index: 1; top: 0px; left: 0px; width: 100%; height: 100%; background: #212227;">
+  <section class="row">
+    <form action="/signup" method="POST" id="form-container" class="form">
+      <h2>Sign Up to <span><img class="login-logo" src="/images/platjob-logo.png" alt="Logo PlatJob" width= "140"></span></h2>
+      <div class="field">
+        <label for="firstname">First Name</label>
+        <input id="firstname" type="firstname" name="firstname" placeholder="Provide your First Name" required>
+      </div>
+      <div class="field">
+        <label for="lastname">Last Name</label>
+        <input id="lastname" type="lastname" name="lastname" placeholder="Provide your Last Name" required>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input data-text="E-mail Address" id="email" type="email" name="email" placeholder="Provide your Email" required>
+      </div>
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" type="text" name="username" placeholder="Set Username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" placeholder="Set a password" required>
+      </div>
+      <div class="field">
+        <label for="role">Select Role</label>
+        <select class="custom-select" name="role" id="role" required>
+          <option value="" disabled="disabled" selected="selected">--Please choose an option--</option>
+          <option value="IRONHACKER">Ironhacker</option>
+          <option value="COMPANY">Company</option>
+        </select>
+      </div>
+      <br>
+      {{#if message}}
+      <div class="error-message">{{ message }}</div>
+      {{/if}}
+      <br>
+      <div class="button">
+        <button>Create account</button>
+      </div>
+      <div class="create-new">
+        <p class="account-message">
+          Do you already have an account?
+          <a href="/login">Login</a>
+        </p>
+        <p class="account-message">
+          <a href="/">Go to main page</a>
+        </p>
+      </div>
+    </form>
+  </section>
+</div>

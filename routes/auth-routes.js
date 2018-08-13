@@ -6,8 +6,6 @@ const authRoutes   = express.Router();
 
 // Models
 const User         = require("../models/user");
-// const Company      = require("../models/company");
-// const Job          = require("../models/job");
 
 // Bcrypt to encrypt passwords
 const bcrypt       = require("bcrypt");
@@ -160,28 +158,67 @@ authRoutes.get('/dashboard', checkAdmin, (req, res, next) => {
     });
 });
 
-authRoutes.post('/create-user', (req, res, next) => {
-  const { firstname, lastname, username, email, password, role } = req.body;
-  const salt = bcrypt.genSaltSync(10);
-  if (password === "") {
-    res.redirect('/dashboard');
-    return;
-  }
-  User.create({ firstname, lastname, username, email, password, role })
-    .then(() => {
-      res.redirect('/dashboard');
-    })
-    .catch((err) => {
-      next(err);
-    });
+// Create New User:
+authRoutes.get('/dashboard/create', (req, res, next) => {
+  res.render("../views/admin-views/add-user");
 });
 
+authRoutes.post('/dashboard/create', (req, res, next) => {
+  const role      = req.body.role;
+  const email     = req.body.email;
+  const firstname = req.body.firstname;
+  const lastname  = req.body.lastname;
+  const username  = req.body.username;
+  const password  = req.body.password;
+
+  if (username === "" || password === "" || role === "" || firstname === "" || email === "" || lastname === "") {
+    res.render("auth-views/signup", {
+      message: "All fields are mandatory."
+    });
+    return;
+  }
+
+  User.findOne({
+    username
+  }, "username", (err, user) => {
+    if (user !== null) {
+      res.render("auth-views/signup", {
+        message: "The username already exists"
+      });
+      return;
+    }
+
+    const salt = bcrypt.genSaltSync(bcryptSalt);
+    const hashPass = bcrypt.hashSync(password, salt);
+
+    const newUser = new User({
+      firstname: firstname,
+      lastname: lastname,
+      email: email, 
+      role: role,
+      username: username,
+      password: hashPass,
+    });
+
+    newUser.save((err) => {
+      if (err) {
+        res.render("auth-views/signup", {
+          message: "Something went wrong"
+        });
+      } else {
+        res.redirect("/");
+      }
+    });
+  });
+});
+
+// Delete Existing User:
 authRoutes.post('/delete-user/:userId', (req, res, next) => {
-  if (req.user.role === "IRONHACKER" && req.user.role === "COMPANY") {
+  if (req.user.role === "IRONHACKER" || req.user.role === "COMPANY") {
     console.log("User successfuly deleted");
     return;
   } else {
-    if (req.user.role === "ADMIN") {
+    if (!req.user.role === "ADMIN") {
       console.log("Cannot delete ADMIN");
       return;
     }
@@ -190,12 +227,53 @@ authRoutes.post('/delete-user/:userId', (req, res, next) => {
   let userId = req.params.userId;
   User.remove({ _id: userId })
     .then(() => {
-      res.redirect('/admin-views/user-list', userId);
+      res.redirect('/view-users');
     })
     .catch((err) => {
       next(err);
     });
 });
+
+// Edit User Profile:
+authRoutes.get('/edit-profile', (req, res, next) => {
+  User.findById(req.params.userId)
+    .then((userDetails) => {
+      res.locals.userInfo = userDetails;
+      res.render('user-views/edit-page', {userDetails: userDetails});
+    })
+    .catch((err) => {
+      next(err);
+    })
+});
+
+authRoutes.post('/process-edit-profile/:userId', (req, res, next) => {
+  const {
+    firstname,
+    lastname,
+    username,
+    email,
+    password
+  } = req.body;
+  User.findByIdAndUpdate(
+      req.params.userId, {
+        firstname,
+        lastname,
+        username,
+        email,
+        password
+      }, {
+        runValidators: true
+      }
+    )
+    .then(() => {
+      res.redirect(`/edit-profile`);
+    })
+    .catch((err) => {
+      next(err);
+    })
+});
+
+
 //=====================================================================================>
 
 
@@ -204,22 +282,30 @@ authRoutes.post('/delete-user/:userId', (req, res, next) => {
 //=====================================================================================>
 // Company Accesses:
 authRoutes.get('/dashboard', checkCompany, (req, res) => {
-  User.find({}, (err, users) => {
-    res.render('/employer/profile', {
-      users: users,
-      authUser: req.user
-    });
+  User.findOne({}, (err, users) => {
+    if(req.user.last_login == false) {
+      res.send("Es tu primer acceso")  
+    } else{
+    // res.render('/dashboard', {
+    //   users: users,
+    //   authUser: req.user,
+    //   last_login: req.users.last_login++
+    // });
+    res.send('Es tu segundo acceso')
+    } 
   });
 });
 
-authRoutes.get('/dashboard', checkCompany, (req, res) => {
+// Add Job
+authRoutes.get('/post-job', checkCompany, (req, res) => {
   console.log(req.user)
-  res.render('employer/users/add', {
+  res.render('employer/job/add', {
     authUser: req.user
   });
 
 });
 
+// Job Vacancie
 authRoutes.post('/dashboard', checkCompany, (req, res) => {
   const { companyName, title, description, duties, objective, qualifications, benefits, email,resume } = req.body;
 
@@ -262,23 +348,33 @@ authRoutes.post('/dashboard', checkCompany, (req, res) => {
     })
 });
 
-authRoutes.get('/employer/users/:id/edit', checkCompany, (req, res) => {
-  User.findOne({
-    _id: req.params.id
-  }, (err, userItem) => {
-    res.render('employer/users/edit', {
-      userItem: userItem,
-      authUser: req.user
-    });
-  });
+// Edit User Profile:
+authRoutes.get('/edit-profile', (req, res, next) => {
+  User.findById(req.params.userId)
+    .then((userDetails) => {
+      res.locals.userInfo = userDetails;
+      res.render('company-views/edit-page', {
+        userDetails: userDetails
+      });
+    })
+    .catch((err) => {
+      next(err);
+    })
 });
 
-authRoutes.post('/employer/users/:id/edit', checkCompany, (req, res) => {
-  User.updateOne({
-    _id: req.params.id
-  }, req.body, (err, user) => {
-    res.redirect("/employer/users");
-  });
+authRoutes.post('/process-edit-profile/:userId', (req, res, next) => {
+  const { companyName, address, username, email, password, phoneNumber } = req.body;
+  User.findByIdAndUpdate(
+      req.params.userId, { companyName, address, username, email, password, phoneNumber }, {
+        runValidators: true
+      }
+    )
+    .then(() => {
+      res.redirect(`/edit-profile`);
+    })
+    .catch((err) => {
+      next(err);
+    })
 });
 
 authRoutes.post('/employer/users/:id/delete', checkCompany, (req, res) => {

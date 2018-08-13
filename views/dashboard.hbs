@@ -1,3 +1,6 @@
+<a href="/">Home</a>
+<a href="/dashboard">{{blahUser.firstname}}</a>
+<a href="/logout">Logout</a>
 {{#if blahUser}}
 <h1>Welcome {{user.firstname}}!</h1>
 <h3>Account information:</h3>
@@ -6,14 +9,16 @@
 <p>Usename: {{blahUser.username}}</p>
 <p>Email: {{blahUser.email}}</p>
 <p>Role: {{blahUser.role}}</p>
-<a href="/views/admin-views/edit-page.hbs">Edit Profile Information</a>
 <br>
 {{/if}}
 <br>
 {{#if blahUser.isAdmin}}
 <br>
 <h2>User Info</h2>
+<a href="/edit-profile">Edit Profile Information</a>
 <a href="/view-users">See User List</a>
+<a href="/dashboard/create">Create new User</a>
+{{!-- <a href="/dashboard/create">Create new Company</a> --}}
 <ul>
   {{#each userList}}
   <li>
@@ -32,6 +37,26 @@
 {{/if}}
 {{#if blahUser.isCompany}}
 <hr>
+<h2>Jobs Posted</h2>
+<a href="/edit-profile">Edit Profile Information</a>
+<a href="/views/admin-views/edit-page.hbs">See Posted Jobs</a>
+<ul>
+  {{#each userList}}
+  <li>
+    <h3>{{this.firstname}} {{this.lastname}}</h3>
+    <ul>
+      <li>User ID: {{this._id}}</li>
+      <li>Username: {{this.username}}</li>
+      <li>Email: {{this.email}}</li>
+    </ul>
+    <form action="/delete-user/{{this._id}}" method="post">
+      <button>Delete User</button>
+    </form>
+  </li>
+  {{/each}}
+</ul>
+{{/if}}
+{{#if blahUser.isUser}}
 <h2>Posted Jobs</h2>
 <a href="/views/admin-views/edit-page.hbs">See Posted Jobs</a>
 <ul>
@@ -50,4 +75,3 @@
   {{/each}}
 </ul>
 {{/if}}
-<a href="/logout">Logout</a>

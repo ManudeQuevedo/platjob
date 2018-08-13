@@ -1,20 +1,22 @@
 require('dotenv').config();
 
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const express = require('express');
-const favicon = require('serve-favicon');
-const hbs = require('hbs');
-const mongoose = require('mongoose');
-const logger = require('morgan');
-const path = require('path');
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const User = require("./models/user");
-const flash = require("connect-flash");
-const MongoStore = require("connect-mongo")(session);
+const bodyParser        = require('body-parser');
+const cookieParser      = require('cookie-parser');
+const express           = require('express');
+const favicon           = require('serve-favicon');
+const hbs               = require('hbs');
+const mongoose          = require('mongoose');
+const logger            = require('morgan');
+const path              = require('path');
+const session           = require('express-session');
+const bcrypt            = require('bcrypt');
+const passport          = require('passport');
+const LocalStrategy     = require('passport-local').Strategy;
+const User              = require("./models/user");
+const flash             = require("connect-flash");
+const MongoStore        = require("connect-mongo")(session);
+// const Post              = require('./models/post');
+// const multer            = require('multer');
 
 
 mongoose.Promise = Promise;
@@ -71,25 +73,25 @@ app.use(flash());
 passport.use(new LocalStrategy({
   passReqToCallback: true
 }, (req, username, password, next) => {
-  User.findOne({
-    username
-  }, (err, user) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return next(null, false, {
-        message: "Incorrect information, please try again"
-      });
-    }
-    if (!bcrypt.compareSync(password, user.password)) {
-      return next(null, false, {
-        message: "Incorrect information, please try again"
-      });
-    }
+   User.findOne({
+     username
+   }, (err, user) => {
+     if (err) {
+       return next(err);
+     }
+     if (!user) {
+       return next(null, false, {
+         message: "Invalid Password or Username"
+       });
+     }
+     if (!bcrypt.compareSync(password, user.password)) {
+       return next(null, false, {
+         message: "Invalid Password or Username"
+       });
+     }
 
-    return next(null, user);
-  });
+     return next(null, user);
+   });
 }));
 
 app.use(passport.initialize());
@@ -126,6 +128,16 @@ app.use('/', index);
 
 const authRoutes = require("./routes/auth-routes");
 app.use('/', authRoutes);
+
+// const postRoutes = require('./routes/post');
+// app.use('/post', postRoutes);
+
+// const adminRoutes = require("./routes/adminRouter");
+// app.use('/', adminRoutes);
+
+// const companyRoutes = require("./routes/companyRouter");
+// app.use('/', companyRoutes);
+
 
 
 module.exports = app;
