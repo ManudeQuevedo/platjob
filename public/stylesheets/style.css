@@ -4,7 +4,11 @@ body {
   font-family: "Open Sans", sans-serif; }
 
 a {
+<<<<<<< HEAD
   color: #fff;
+=======
+  color: #03C4EB;
+>>>>>>> 4420f964c43c4ad3548b8e54e05fb5dc678c7bc7
   transition: 0.5s; }
 
 a:hover,
@@ -245,7 +249,10 @@ h6 {
 
 /* Nav Meu Container */
 #nav-menu-container {
+<<<<<<< HEAD
   display: inline-block;
+=======
+>>>>>>> 4420f964c43c4ad3548b8e54e05fb5dc678c7bc7
   float: right;
   margin: 5px 0; }
 
@@ -740,6 +747,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 h1 {
   text-align: center; }
 
+<<<<<<< HEAD
 div .error-message {
   background-color: #d9534f;
   border-radius: 3px;
@@ -807,11 +815,17 @@ select .custom-select {
 
 .register-btn {
   text-align: center; }
+=======
+form {
+  margin: 0 auto;
+  width: 300px; }
+>>>>>>> 4420f964c43c4ad3548b8e54e05fb5dc678c7bc7
 
 input {
   margin-bottom: 3px;
   padding: 10px;
   width: 100%;
+<<<<<<< HEAD
   border: 1px solid #CCC;
   border-radius: 10px; }
 
@@ -842,6 +856,15 @@ button:hover {
 label {
   cursor: pointer;
   padding: 10px; }
+=======
+  border: 1px solid #CCC; }
+
+button {
+  padding: 10px; }
+
+label {
+  cursor: pointer; }
+>>>>>>> 4420f964c43c4ad3548b8e54e05fb5dc678c7bc7
 
 #form-switch {
   display: none; }
@@ -854,6 +877,7 @@ label {
 
 #form-switch:checked ~ #login-form {
   display: none; }
+<<<<<<< HEAD
 
 @media only screen and (max-width: 768px) {
   form {
@@ -870,5 +894,7 @@ label {
     padding: 20px 20px 5px;
     box-sizing: border-box;
     float: left; } }
+=======
+>>>>>>> 4420f964c43c4ad3548b8e54e05fb5dc678c7bc7
 
 /*# sourceMappingURL=style.css.map */
