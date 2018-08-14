@@ -129,5 +129,6 @@ app.use('/', index);
 const authRoutes = require("./routes/auth-routes");
 app.use('/', authRoutes);
 
+app.listen(process.env.PORT || 3000),
 
 module.exports = app;
