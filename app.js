@@ -21,7 +21,7 @@ const MongoStore        = require("connect-mongo")(session);
 
 mongoose.Promise = Promise;
 mongoose
-  .connect(process.env.DB || 'mongodb://localhost/platjob', {
+  .connect('mongodb://localhost/platjob', {
     useMongoClient: true
   })
   .then(() => {
