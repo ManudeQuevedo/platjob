@@ -21,7 +21,7 @@ const mongoDB           = "mongodb://manudequevedo:Amigos10-@ds119692.mlab.com:1
 
 
 mongoose.Promise = Promise;
-mongoose.connect(mongoDB || 'mongodb://localhost/platjob', {
+mongoose.connect(mongoDB, {
     useMongoClient: true
   })
   .then(() => {
