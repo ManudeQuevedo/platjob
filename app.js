@@ -129,15 +129,5 @@ app.use('/', index);
 const authRoutes = require("./routes/auth-routes");
 app.use('/', authRoutes);
 
-// const postRoutes = require('./routes/post');
-// app.use('/post', postRoutes);
-
-// const adminRoutes = require("./routes/adminRouter");
-// app.use('/', adminRoutes);
-
-// const companyRoutes = require("./routes/companyRouter");
-// app.use('/', companyRoutes);
-
-
 
 module.exports = app;
