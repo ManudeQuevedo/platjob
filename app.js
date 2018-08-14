@@ -15,13 +15,13 @@ const LocalStrategy     = require('passport-local').Strategy;
 const User              = require("./models/user");
 const flash             = require("connect-flash");
 const MongoStore        = require("connect-mongo")(session);
+const mongoDB           = "mongodb://manudequevedo:Amigos10-@ds119692.mlab.com:19692/platjob";
 // const Post              = require('./models/post');
 // const multer            = require('multer');
 
 
 mongoose.Promise = Promise;
-mongoose
-  .connect(process.env.DB || 'mongodb://localhost/platjob', {
+mongoose.connect(mongoDB || 'mongodb://localhost/platjob', {
     useMongoClient: true
   })
   .then(() => {
