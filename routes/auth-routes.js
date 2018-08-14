@@ -8,7 +8,7 @@ const authRoutes   = express.Router();
 const User         = require("../models/user");
 
 // Bcrypt to encrypt passwords
-const bcrypt       = require("bcrypt");
+const bcrypt       = require("bcryptjs");
 const bcryptSalt   = 10;
 
 // /routes/auth-routes.js
